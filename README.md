@@ -34,7 +34,7 @@ Installation
 
 ```bash
 # Clone the repository
-git clone https://github.com/exploitarium/felix.git
+git clone https://github.com/expl0itlab/felix.git
 cd felix
 
 # Run setup script
@@ -526,7 +526,7 @@ Made with ❤️ for the security community | Keep hunting responsibly
 </p>
 
 <p align="center">
-<a href="https://github.com/exploitarium/felix/stargazers">⭐ Star on GitHub</a> | 
-<a href="https://github.com/exploitarium/felix/issues">Report Bug</a> | 
-<a href="https://github.com/exploitarium/felix/pulls">Submit PR</a>
+<a href="https://github.com/expl0itlab/felix/stargazers">⭐ Star on GitHub</a> | 
+<a href="https://github.com/expl0itlab/felix/issues">Report Bug</a> | 
+<a href="https://github.com/expl0itlab/felix/pulls">Submit PR</a>
 </p>
