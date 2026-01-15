@@ -60,15 +60,24 @@ felix -f subdomains.txt -t 5 -o results.txt
 ### Command Line Options
 
 Option Short Description Default
---file -f Input file containing subdomains -
---out -o Output file to save results -
---code -c Filter by status codes (comma-separated) -
+
+--file -f Input file containing subdomains 
+
+--out -o Output file to save results 
+
+--code -c Filter by status codes (comma-separated) 
+
 --timeout -t Connection timeout in seconds 10
+
 --rate -r Delay between requests in seconds 0
+
 --live-only -l Save only live (2xx) URLs false
+
 --verbose -v Show verbose output false
---help -h Show help message -
---version -V Show version -
+
+--help -h Show help message 
+
+--version -V Show version 
 
 Examples
 
