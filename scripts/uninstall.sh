@@ -1,22 +1,24 @@
 #!/bin/sh
+# POSIX-compliant uninstall script for felix
 
-# Uninstall script for Felix
+set -eu
 
-echo "Uninstalling Felix..."
-echo "====================="
+INSTALL_FILE="/usr/local/bin/felix"
 
-# Remove symlinks
-if [ -L /usr/local/bin/felix ]; then
-    echo "Removing symlink from /usr/local/bin..."
-    rm /usr/local/bin/felix
+echo "[*] Uninstalling felix..."
+
+# Ensure script is run as root
+if [ "$(id -u)" -ne 0 ]; then
+    echo "[!] Please run as root (sudo ./uninstall.sh)"
+    exit 1
 fi
 
-if [ -L "$HOME/.local/bin/felix" ]; then
-    echo "Removing symlink from $HOME/.local/bin..."
-    rm "$HOME/.local/bin/felix"
+# Remove installed binary if it exists
+if [ -f "$INSTALL_FILE" ]; then
+    rm -f "$INSTALL_FILE"
+    echo "[+] Removed $INSTALL_FILE"
+else
+    echo "[!] felix is not installed at $INSTALL_FILE"
 fi
 
-echo ""
-echo "Felix has been uninstalled."
-echo "Note: Script files in this directory were not removed."
-echo "You can delete this directory manually if desired."
+echo "[+] Uninstall complete"
