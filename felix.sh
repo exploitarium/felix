@@ -1,27 +1,23 @@
 #!/bin/sh
 
-# felix.sh - Subdomain Liveness Checker (POSIX-compliant)
-
-VERSION="1.0.1"
+VERSION="1.0.2"
 
 BANNER="
  ███████╗███████╗██╗     ██╗██╗  ██╗
  ██╔════╝██╔════╝██║     ██║╚██╗██╔╝
- █████╗  █████╗  ██║     ██║ ╚███╔╝ 
- ██╔══╝  ██╔══╝  ██║     ██║ ██╔██╗ 
+ █████╗  █████╗  ██║     ██║ ╚███╔╝
+ ██╔══╝  ██╔══╝  ██║     ██║ ██╔██╗
  ██║     ███████╗███████╗██║██╔╝ ██╗
  ╚═╝     ╚══════╝╚══════╝╚═╝╚═╝  ╚═╝
   Subdomain Liveness Checker v${VERSION}
 "
 
-# Colors
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 CYAN='\033[0;36m'
 NC='\033[0m'
 
-# Defaults
 TIMEOUT=10
 DELAY=0
 OUTPUT_FILE=""
@@ -34,20 +30,11 @@ print_status() {
     code="$1"
     url="$2"
     scheme="$3"
-
     case "$code" in
-        2*)
-            printf "${GREEN}[✓]${NC} ${CYAN}%s${NC} ${GREEN}(%s)${NC}\n" "$scheme://$url" "$code"
-            ;;
-        3*)
-            printf "${YELLOW}[↪]${NC} ${CYAN}%s${NC} ${YELLOW}(%s)${NC}\n" "$scheme://$url" "$code"
-            ;;
-        4*|5*)
-            printf "${RED}[✗]${NC} ${CYAN}%s${NC} ${RED}(%s)${NC}\n" "$scheme://$url" "$code"
-            ;;
-        *)
-            printf "[?] %s (%s)\n" "$scheme://$url" "$code"
-            ;;
+        2*) printf "${GREEN}[✓]${NC} ${CYAN}%s${NC} ${GREEN}(%s)${NC}\n" "$scheme://$url" "$code" ;;
+        3*) printf "${YELLOW}[↪]${NC} ${CYAN}%s${NC} ${YELLOW}(%s)${NC}\n" "$scheme://$url" "$code" ;;
+        4*|5*) printf "${RED}[✗]${NC} ${CYAN}%s${NC} ${RED}(%s)${NC}\n" "$scheme://$url" "$code" ;;
+        *) printf "[?] %s (%s)\n" "$scheme://$url" "$code" ;;
     esac
 }
 
@@ -103,9 +90,7 @@ save_result() {
 
 process_subdomain() {
     subdomain="$1"
-
     subdomain=$(echo "$subdomain" | sed 's#^https\?://##;s#/.*##')
-
     [ -z "$subdomain" ] && return
     case "$subdomain" in \#*) return ;; esac
 
@@ -153,11 +138,7 @@ show_help() {
 
 main() {
     trap 'printf "\n[*] Interrupted\n"; exit 130' INT TERM
-
-    command -v curl >/dev/null 2>&1 || {
-        printf "Error: curl not installed\n"
-        exit 1
-    }
+    command -v curl >/dev/null 2>&1 || { printf "Error: curl not installed\n"; exit 1; }
 
     INPUT=""
     INPUT_FILE=""
@@ -180,27 +161,31 @@ main() {
 
     printf "%s\n" "$BANNER"
 
+    # Determine input source
     if [ -n "$INPUT_FILE" ]; then
         if [ "$INPUT_FILE" = "-" ]; then
-            INPUT_STREAM="/dev/stdin"
+            INPUT_STREAM="/dev/fd/0"
         elif [ -f "$INPUT_FILE" ]; then
             INPUT_STREAM="$INPUT_FILE"
         else
             printf "Error: Input file not found\n"
             exit 1
         fi
-
-        [ -n "$OUTPUT_FILE" ] && : > "$OUTPUT_FILE"
-
-        while IFS= read -r line || [ -n "$line" ]; do
-            process_subdomain "$line"
-        done < "$INPUT_STREAM"
-
     elif [ -n "$INPUT" ]; then
-        process_subdomain "$INPUT"
+        INPUT_STREAM=""
     else
         printf "Error: No input provided\n"
         exit 1
+    fi
+
+    [ -n "$OUTPUT_FILE" ] && : > "$OUTPUT_FILE"
+
+    if [ -n "$INPUT_STREAM" ]; then
+        while IFS= read -r line || [ -n "$line" ]; do
+            process_subdomain "$line"
+        done < "$INPUT_STREAM"
+    elif [ -n "$INPUT" ]; then
+        process_subdomain "$INPUT"
     fi
 
     printf "\n[*] Scan completed\n"
